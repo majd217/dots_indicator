@@ -2,13 +2,15 @@ library dots_indicator;
 
 import 'dart:math';
 import 'dart:ui';
-
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:dots_indicator/src/dots_decorator.dart';
 import 'package:flutter/material.dart';
 
 typedef void OnTap(double position);
 
 class DotsIndicator extends StatelessWidget {
+  final ImageProvider? activeImage;
+  final ImageProvider? inactiveImage;
   final int dotsCount;
   final double position;
   final DotsDecorator decorator;
@@ -21,10 +23,12 @@ class DotsIndicator extends StatelessWidget {
   DotsIndicator({
     Key? key,
     required this.dotsCount,
+    this.inactiveImage,
     this.position = 0.0,
     this.decorator = const DotsDecorator(),
     this.axis = Axis.horizontal,
     this.reversed = false,
+    this.activeImage,
     this.mainAxisSize = MainAxisSize.min,
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.onTap,
@@ -102,12 +106,36 @@ class DotsIndicator extends StatelessWidget {
     return onTap == null ? dot : _wrapInkwell(dot, index);
   }
 
+  Widget _buildIcon(BuildContext context, int index) {
+    final lerpValue = min(1.0, (position - index).abs());
+
+    final size = Size.lerp(
+      decorator.getActiveSize(index),
+      decorator.getSize(index),
+      lerpValue,
+    )!;
+
+    final icon = Container(
+      width: size.width,
+      height: size.height,
+      margin: decorator.spacing,
+      decoration: BoxDecoration.lerp(
+          BoxDecoration(image: DecorationImage(image: activeImage!)),
+          BoxDecoration(image: DecorationImage(image: inactiveImage!)),
+          lerpValue)!,
+    );
+    return onTap == null ? icon : _wrapInkwell(icon, index);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final dotsList = List<Widget>.generate(
-      dotsCount,
-      (i) => _buildDot(context, i),
-    );
+    final dotsList = List<Widget>.generate(dotsCount, (i) {
+      if (activeImage != null && inactiveImage != null) {
+        return _buildIcon(context, i);
+      } else {
+        return _buildDot(context, i);
+      }
+    });
     final dots = reversed ? dotsList.reversed.toList() : dotsList;
 
     return axis == Axis.vertical

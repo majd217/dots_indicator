@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -74,10 +75,11 @@ class _MyAppState extends State<MyApp> {
                 SizedBox(
                   width: 300.0,
                   child: Slider(
-                  value: _currentPosition,
-                  max: (_totalDots - 1).toDouble(),
-                  onChanged: _updatePosition,
-                ),),
+                    value: _currentPosition,
+                    max: (_totalDots - 1).toDouble(),
+                    onChanged: _updatePosition,
+                  ),
+                ),
               ]),
               _buildRow([
                 FloatingActionButton(
@@ -195,10 +197,12 @@ class _MyAppState extends State<MyApp> {
               _buildRow([
                 const Text('Reversed'),
                 DotsIndicator(
-                  dotsCount: _totalDots,
+                  decorator: DotsDecorator(
+                      size: Size.square(100), activeSize: Size.square(110)),
+                  dotsCount: 3,
                   position: _currentPosition,
-                  reversed: true,
-                  decorator: decorator,
+                  activeImage: Svg('assets/heart_full.svg'),
+                  inactiveImage: Svg('assets/heart.svg'),
                 ),
               ]),
             ],

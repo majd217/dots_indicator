@@ -12,6 +12,13 @@ dependencies:
 
   dots_indicator:
     path: ../
+  flutter_svg: ^1.1.6
+  flutter_svg_provider: ^1.0.3
 
 flutter:
   uses-material-design: true
+  assets:
+  
+    - assets/
+  
+ 
